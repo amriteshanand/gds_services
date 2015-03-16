@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.Text;
 using gds_services;
+using System.Configuration;
 namespace gds_services
 {
     public class SMS_Response : Response
@@ -28,7 +29,7 @@ namespace gds_services
             return "OK";
         }
 
-        public SMS_Response send_sms(string type, int booking_id, string mobile_no)
+        public SMS_Response send_sms(string type, int booking_id, string mobile_no,string key)
         {
 
             SMS_Response response = new SMS_Response();
@@ -40,18 +41,30 @@ namespace gds_services
             string sms_template;
             SMS.SMS_Data sms_data;
             string sms_text;
+            string sms_complete_url="";
             Utils.clsLogger logger = new Utils.clsLogger();
+            string default_sms_gateway=ConfigurationManager.AppSettings["DEFAULT_SMS_GATEWAY"].ToString();
             try
             {
                 switch (type)
                 {
+                    //SMS on booking 
                     case "booking_sms":
-                        sms_sender = new SMS.SMS_Sender("SMS_GATEWAY_EZEESMS", "test_client_key");
-                        sms_template = SMS.SMS_Sender.get_sms_template("booking_sms");
+                        sms_sender = new SMS.SMS_Sender(default_sms_gateway,type, key);
+                        sms_template = SMS.SMS_Sender.get_sms_template(type);
                         sms_data = new SMS.SMS_Data(booking_id);
                         sms_text = sms_data.prepare_booking_sms(sms_template);
-                        sms_sender.send_sms(mobile_no, sms_text);
+                        sms_complete_url=sms_sender.send_sms(mobile_no, sms_text);
                         response.status = true;
+                        break;
+
+                    //SMS on booking cancellation
+                    case "cancel_sms":
+                        sms_sender = new SMS.SMS_Sender(default_sms_gateway, type, key);
+                        sms_template = SMS.SMS_Sender.get_sms_template(type);
+                        sms_data = new SMS.SMS_Data(booking_id);
+                        sms_text = sms_data.prepare_booking_sms(sms_template);
+                        sms_complete_url=sms_sender.send_sms(mobile_no, sms_text);
                         break;
                     default:
                         throw new System.Exception("Invalid SMS Type");
@@ -69,6 +82,8 @@ namespace gds_services
                 //response.error = ex.Message;
                 response.error = ex.ToString();
             }
+            //Log sms into db for accounting purpose;
+            SMS.SMS_Sender.log_sms_into_db(booking_id, mobile_no, sms_complete_url, Convert.ToInt32(response.status));
             return response;
         }
     }

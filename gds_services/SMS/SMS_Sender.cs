@@ -12,20 +12,21 @@ namespace gds_services.SMS
     {
         public string gateway_url = null;
         public string client_key = null;
-        
+        public string type = null;
         public int max_retries;
         private Utils.clsLogger logger;
         /*
          * gateway: pass gateway name to be used and gateway configuration must be added in configuration
          * client_key: to authorise client
          */
-        public SMS_Sender(string gateway,string client_key)
+        public SMS_Sender(string gateway,string type, string client_key)
         {
             this.gateway_url = SMS_Sender.get_sms_gateway(gateway);
-            this.validate_client_key(client_key);
+            this.validate_client_key(type, client_key);
             this.client_key = client_key;
             this.init_config();
             this.logger = new Utils.clsLogger();
+            this.type = type;
         }
 
         private void init_config(){
@@ -40,25 +41,32 @@ namespace gds_services.SMS
             }
         }
 
-        private void validate_client_key(string client_key)
+        private void validate_client_key(string type,string client_key)
         { 
-            //TODO:
+            string salt=ConfigurationManager.AppSettings["API_KEY_SALT"].ToString();
+            string salted_type=type+"|"+salt;
+            string generated_key = Utils.Key_Generator.get_MD5_hash(salted_type);
+            if (generated_key != client_key) 
+            {
+                throw new System.Exception("Invalid key !");
+            }
         }
 
         /*
          * This method can be used to send sms
          */
-        public void send_sms(string mobile_no,string text)
+        public string send_sms(string mobile_no,string text)
         {
             int curr_tries = 0;
             bool success = false;
             string sms_gateway_response="";
+            string fetch_url ="";
             while (curr_tries < this.max_retries)
             {
                 try
                 {
                     curr_tries++;
-                    string fetch_url = this.gateway_url;
+                    fetch_url = this.gateway_url;
                     fetch_url = fetch_url.Replace("@@mobile_no", mobile_no);
                     fetch_url = fetch_url.Replace("@@sms_text", text);
                     Utils.HTTP sms_http = new Utils.HTTP();
@@ -84,7 +92,8 @@ namespace gds_services.SMS
             if (!success) {
                 this.logger.log("fatal", sms_gateway_response);
                 throw new System.Exception("Failed to send sms");                
-            }            
+            }
+            return fetch_url;
         }
         
         /*
@@ -120,17 +129,41 @@ namespace gds_services.SMS
                 throw new System.Exception("Template Not Found!");
             }                        
         }
+        public static void log_sms_into_db(int booking_id, string mobile_no, string url, int is_sent)
+        {
+            int sms_id=0;
+            string str_error="";
+            DB.clsDB db = new DB.clsDB();
+
+            db.AddParameter("SMS_ID", sms_id);
+            db.AddParameter("BOOKING_ID", booking_id);
+            db.AddParameter("MOBILE_NO", mobile_no,20);
+            db.AddParameter("URL", url,500);
+            db.AddParameter("URL_DEPART", "",20);
+            db.AddParameter("SEND_TIME", DateTime.Now);
+            db.AddParameter("ERR_MSG", str_error, 20);
+            db.AddParameter("IS_SENT", is_sent);
+            db.ExecuteDML("spSMSLog_Insert", CommandType.StoredProcedure, 30);
+        }
     }
     
     public class SMS_Data
     {
+        public int booking_id;
+        public string text=null;
         public SMS_Data(int booking_id)
         { 
-
+            //TODO:
+        }
+        public SMS_Data(string text)
+        {
+            this.text = text;
         }
         public string prepare_booking_sms(string sms_template)
         {
+            //TODO:
             return sms_template;
         }
+        
     }
 }

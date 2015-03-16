@@ -1,0 +1,1 @@
+﻿<%@ ServiceHost Language="C#" Debug="true" Service="gds_services.Email_Services" CodeBehind="Email_Services.svc.cs" %>
