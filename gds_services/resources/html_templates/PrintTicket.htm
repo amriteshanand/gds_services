@@ -1,0 +1,311 @@
+﻿<html>
+<head>
+    <title>Untitled Page</title>
+</head>
+<body style="margin: 0 auto; padding: 0px; font: 11px Arial, Helvetica, sans-serif;
+    color: #000000; background-color: #FFFFFF;">
+    <form id="form1" runat="server">
+    <table style="width: 676px" cellspacing="0">
+        <tr>
+            <td>
+                <table width="100%" cellspacing="0">
+                    <tr>
+                        <td style="height: 16px">
+                            <table width="100%" cellspacing="0">
+                                <tr>
+                                    <td>
+                                        <table width="100%" cellspacing="0">
+                                            <tr>
+                                                <td>
+                                                    <table width="100%">
+                                                        <tr>
+                                                            <td style="text-align: center;">
+                                                                <span id="lblBookedByName2" class="cap" style="font-size: 13pt; font-weight: bold;">
+                                                                    ##BOOKEDBYAGENT##</span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="text-align: center; font-size: 8pt;" align="right">
+                                                                Electronic Reservation Slip
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="height: 26px">
+                                                    <table width="100%" cellspacing="0">
+                                                        <tr>
+                                                            <td style="text-align: left; border-bottom-style: solid; border-bottom-width: thin;
+                                                                border-bottom-color: Gray;">
+                                                                <span id="lblFromTo2" style="font-size: 11pt; font-weight: 700">##FROMTO##</span>
+                                                            </td>
+                                                            <td style="text-align: right; border-bottom-style: solid; border-bottom-width: thin;
+                                                                border-bottom-color: Gray;">
+                                                                <span style="font-size: 11pt; font-weight: 700">PNR: <span id="lblPNR2">##PNR##</span>
+                                                                    &nbsp;</span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="text-align: left; border-bottom-style: solid; border-bottom-width: thin;
+                                                                border-bottom-color: Gray;" colspan="2">
+                                                                <table style="width: 100%; font-size: 9pt">
+                                                                    <tr>
+                                                                        <td style="width: 81px">
+                                                                            <span style="font-size: 9pt">Ticket No:</span> &nbsp;
+                                                                        </td>
+                                                                        <td style="width: 243px">
+                                                                            ##TICKETNO##
+                                                                        </td>
+                                                                        <td style="width: 96px">
+                                                                            <span style="font-size: 9pt">Booking date:</span> &nbsp;
+                                                                        </td>
+                                                                        <td>
+                                                                            <span id="lblBookingDateTimeBy2" class="cap" style="font-size: 9pt; font-weight: normal;">
+                                                                                ##BOOKINGDATE##</span>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td style="width: 81px">
+                                                                            <span style="font-size: 9pt">From-To:</span>
+                                                                        </td>
+                                                                        <td style="width: 243px">
+                                                                            <span id="lblFromTo3">##FROMTO##</span>
+                                                                        </td>
+                                                                        <td style="width: 96px">
+                                                                            <span style="font-size: 9pt">Journey date:</span>
+                                                                        </td>
+                                                                        <td>
+                                                                            <span id="lblJourneyDate2" style="font-size: 11pt; font-weight: bold;">##JOURNEYDATE##</span>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td style="width: 81px">
+                                                                            <span style="font-size: 9pt">Operator:</span>
+                                                                        </td>
+                                                                        <td style="width: 243px">
+                                                                            ##OPERATOR##
+                                                                        </td>
+                                                                        <td style="width: 96px">
+                                                                            <span style="font-size: 9pt">Departure time:</span> &nbsp;
+                                                                        </td>
+                                                                        <td>
+                                                                            <span id="lblDepartureTime2" style="font-size: 11pt; font-weight: bold;">##DEPARTTIME##</span>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td style="width: 81px">
+                                                                            <span style="font-size: 9pt">No. of Pax:
+                                                                        </td>
+                                                                        <td style="width: 243px">
+                                                                            ##PAX##
+                                                                        </td>
+                                                                        <td style="width: 96px">
+                                                                            <span style="font-size: 9pt">Bus Type:</span>
+                                                                        </td>
+                                                                        <td>
+                                                                            <span id="lblArrangement2" class="cap" style="font-size: 9pt;">##BUSTYPE##</span>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td style="width: 81px">
+                                                                            <span style="font-size: 9pt">Total fare:</span>
+                                                                        </td>
+                                                                        <td style="width: 243px">
+                                                                            ##TOTALFARE##
+                                                                        </td>
+                                                                        <td style="width: 96px">
+                                                                            <span style="font-size: 9pt">Boarding point:</span>
+                                                                        </td>
+                                                                        <td>
+                                                                            <span id="lblBoardingPoint2" style="font-size: 9pt; font-weight: normal;">##BOARDINGPOINT##</span>
+                                                                        </td>
+                                                                    </tr>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2" style="font-size: 9pt;">
+                                                    Passenger details
+                                                    <tr>
+                                                        <td colspan="2" style="border-bottom-style: solid; border-bottom-width: thin; border-bottom-color: Gray;">
+                                                            <table style="width: 100%" style="font-size: 9pt">
+                                                                <tr>
+                                                                    <td>
+                                                                        <span style="font-size: 9pt">Name</span>
+                                                                    </td>
+                                                                    <td style="width: 78px">
+                                                                        &nbsp;
+                                                                    </td>
+                                                                    <td>
+                                                                        <span style="font-size: 9pt">Seater Nos</span>
+                                                                    </td>
+                                                                    <td>
+                                                                        <span style="font-size: 9pt">Sleeper Nos</span>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        <span id="lblName2" class="cap" style="font-size: 11pt; font-weight: bold;">##CUSTNAME##</span>
+                                                                    </td>
+                                                                    <td style="width: 78px">
+                                                                        &nbsp;
+                                                                    </td>
+                                                                    <td>
+                                                                        <span id="lblSitter2" class="cap" style="font-size: 11pt; font-weight: bold;">##SEATS##</span>
+                                                                    </td>
+                                                                    <td>
+                                                                        <span id="lblSleeper2" class="cap" style="font-size: 11pt; font-weight: bold;">##SLEEPERS##</span>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="2" style="border-bottom-style: solid; border-bottom-width: thin; border-bottom-color: Gray;">
+                                                            <table style="width: 100%; font-size: 9pt">
+                                                                <tr>
+                                                                    <td style="width: 111px">
+                                                                        Boarding address
+                                                                    </td>
+                                                                    <td>
+                                                                        &nbsp;
+                                                                    </td>
+                                                                    <td>
+                                                                        Helpline Number:
+                                                                    </td>
+                                                                    <td>
+                                                                        &nbsp;
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td style="width: 111px">
+                                                                        Location:&nbsp;
+                                                                    </td>
+                                                                    <td>
+                                                                        <span id="lblLocation2" style="font-size: 9pt; font-weight: normal;">##PICKUPLOCATION##</span>
+                                                                    </td>
+                                                                    <td>
+                                                                        Operator contact no
+                                                                    </td>
+                                                                    <td>
+                                                                        &nbsp;
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td style="width: 111px">
+                                                                        Landmark:
+                                                                    </td>
+                                                                    <td>
+                                                                        <span id="lblLandmark2" style="font-size: 9pt; font-weight: normal;">##LANDMARK##</span>
+                                                                    </td>
+                                                                    <td>
+                                                                        &nbsp;
+                                                                    </td>
+                                                                    <td>
+                                                                        &nbsp;
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td style="width: 111px">
+                                                                        Address:
+                                                                    </td>
+                                                                    <td>
+                                                                        <span id="lblAddress2" style="font-size: 9pt; font-weight: normal;">##PICKUPADDRESS##</span>
+                                                                    </td>
+                                                                    <td>
+                                                                        ##SUBAGENT## &nbsp;contact no:&nbsp;
+                                                                    </td>
+                                                                    <td>
+                                                                        &nbsp;
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td style="width: 111px">
+                                                                        Contact Nos:
+                                                                    </td>
+                                                                    <td>
+                                                                        <span id="lblContactNo2" style="font-size: 9pt; font-weight: normal;">##PICKUPCONTACTNO##</span>
+                                                                    </td>
+                                                                    <td>
+                                                                        ##CONTACTNO##
+                                                                    </td>
+                                                                    <td>
+                                                                        &nbsp;
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="height: 27px;" style="text-align: left; font-size: x-small;">
+                                        <span style="font-size: xx-small; font-weight: bold;">Note</span><span style="font-size: xx-small;">:
+                                            Printout of this ticket has to be produced at the time of boarding. Please be present
+                                            atleast 15 mins prior to time of departure at the boarding point. </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="height: 27px;" style="text-align: left; font-size: x-small;">
+                                        <span style="text-decoration: underline;"><span style="font-size: xx-small; font-weight: bold;">
+                                            <br />
+                                            Terms and conditions:<br />
+                                        </span></span><span style="font-size: xx-small;">
+                                            <br style="text-decoration: underline;" />
+                                        </span><span style="text-decoration: underline;"><span style="font-size: 7pt;">##SUBAGENT##
+                                            &nbsp;is responsible for</span></span><span style="font-size: 7pt;">: (1) Issuing valid
+                                                ticket (a ticket that will be accepted by the bus operators or their network) (2)
+                                                Providing refund &amp; support in case of cancellations (3) Providing customer support
+                                                in case of delays or other inconvenience.<br />
+                                                <span style="text-decoration: underline;">
+                                                    <br />
+                                                    ##SUBAGENT## &nbsp;is not responsible for</span>: (1) Bus not departing or reaching
+                                                on time (2) The bus operator&#39;s employees being rude (3) Bus seats etc. not being
+                                                upto expectation of the customer (4) The bus operator cancelling the trip due to
+                                                unavoidable reasons (5) Stolen/Lost/Damaged baggage during the journey (6) Bus operator
+                                                changing allotted seat at the last moment to accomodate a lady/child (7) Customer
+                                                waiting at the wrong boarding point or getting delayed in reaching the boarding
+                                                point (8) Bus operator changing the boarding point and/or using a pickup vehicle
+                                                at the boarding point to take customer to the bus departure point.<br />
+                                                <br />
+                                                The arrival and departure time on the ticket is tentative. However, bus will not
+                                                leave the source before scheduled departure.<br />
+                                                <br />
+                                                Passengers are required to furnish a valid identity proof (driving license, student/company
+                                                card, Passport, PAN or Voter id). Failing to do so can result in boarding being
+                                                denied by the bus operator.<br />
+                                                <br />
+                                                Change of bus: In case the bus type mentioned on the ticket is changed for any reason,
+                                                ##SUBAGENT## will refund the differential amount to the customer upon being intimated
+                                                by the customer in 24 hours of the journey<br />
+                                        Service charge or home delivery charges will not be refunded if ticket is 
+                                        cancelled.</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="height: 27px;" style="text-align: left; font-size: x-small;">
+                                        <span style="text-decoration: underline;"><span style="font-size: xx-small; font-weight: bold;">
+                                            <br />
+                                            Cancellation Charges:<br />
+                                        </span></span><span style="font-size: xx-small;">
+                                            <br style="text-decoration: underline;" />
+                                            ##CANCCHARGES## </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <pre>&nbsp;</pre>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+    </form>
+</body>
+</html>

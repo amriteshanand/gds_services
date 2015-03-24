@@ -13,13 +13,13 @@ namespace gds_services
     public interface ISMS_Services
     {
         [OperationContract]
-        [WebInvoke(Method = "GET", ResponseFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Bare)]
+        [WebGet(ResponseFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Bare)]
         string test();
         /**/
 
         [OperationContract]
-        [WebGet(ResponseFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.Bare, UriTemplate = "send_sms?type={type}&booking_id={booking_id}&mobile_no={mobile_no}")]
-        SMS_Response send_sms(string type, int booking_id, string mobile_no,string key);
+        [WebInvoke(Method = "POST", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.WrappedRequest, UriTemplate = "send_sms")]
+        SMS_Response send_sms(string type, int booking_id, string mobile_no, Dictionary<string, object> content, string key);
 
     }
 

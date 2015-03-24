@@ -5,6 +5,7 @@ using System.Web;
 using System.Configuration;
 using gds_services;
 using System.Data;
+using System.Text.RegularExpressions;
 
 namespace gds_services.SMS
 {
@@ -88,7 +89,6 @@ namespace gds_services.SMS
                     continue;
                 }
             }
-            //TODO:Log sms and its status;
             if (!success) {
                 this.logger.log("fatal", sms_gateway_response);
                 throw new System.Exception("Failed to send sms");                
@@ -151,18 +151,63 @@ namespace gds_services.SMS
     {
         public int booking_id;
         public string text=null;
+        List<Dictionary<string, object>> details_list;
+        Dictionary<string, string> content;
         public SMS_Data(int booking_id)
-        { 
-            //TODO:
+        {
+            DB.clsDB db = new DB.clsDB();
+            content = new Dictionary<string,string>();
+            db.AddParameter("BOOKING_ID", booking_id);
+            DataSet ds = db.ExecuteSelect("WS_GET_BOOKING_DETAILS_Amritesh", System.Data.CommandType.StoredProcedure, 30);
+            if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+            {
+                details_list = ds.Tables[0].AsEnumerable().Select(dr => ds.Tables[0].Columns.Cast<DataColumn>().ToDictionary(dc => dc.ColumnName, dc => dr[dc])).ToList();
+                foreach (Dictionary<string, object> elements in details_list)
+                {
+                    foreach (KeyValuePair<string, object> entry in elements)
+                    {
+                        content[entry.Key] = entry.Value.ToString();
+                    }
+                }
+            }
+            else
+            {
+                throw new System.Exception("Booking ID Not Found!");
+            }
         }
         public SMS_Data(string text)
         {
             this.text = text;
         }
+        //Get all keys starting with =$
+        private List<string> get_template_keys(string template)
+        {
+            List<string> _template_keys = new List<string>();
+            MatchCollection matchList;
+            matchList = Regex.Matches(template, "[=][$][a-zA-Z_]+");
+            _template_keys.AddRange(matchList.Cast<Match>().Select(match => match.Value).Distinct().ToList());
+            return _template_keys;
+        }
         public string prepare_booking_sms(string sms_template)
         {
-            //TODO:
-            return sms_template;
+            text = sms_template;
+            List<string> template_keys = get_template_keys(text);
+            foreach (string tkey in template_keys)
+            {
+                string key = tkey.Trim( new Char[] { '#', '=', '$' } );
+                if (content.ContainsKey(key))
+                {
+                    if (text != null)
+                    {
+                        text = text.Replace(tkey, content[key] as string);
+                    }
+                }
+                else
+                {
+                    throw new System.Exception("Template data " + key + " not found");
+                }
+            }
+            return text;
         }
         
     }

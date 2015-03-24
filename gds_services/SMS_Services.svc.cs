@@ -18,7 +18,6 @@ namespace gds_services
 
         }
         public SMS_Result result = new SMS_Result();
-        //public Dictionary<string,object> result = new Dictionary<string,object>();
     }
 
     // NOTE: You can use the "Rename" command on the "Refactor" menu to change the class name "SMS_Services" in code, svc and config file together.
@@ -29,7 +28,7 @@ namespace gds_services
             return "OK";
         }
 
-        public SMS_Response send_sms(string type, int booking_id, string mobile_no,string key)
+        public SMS_Response send_sms(string type, int booking_id, string mobile_no, Dictionary<string, object> content, string key)
         {
 
             SMS_Response response = new SMS_Response();
@@ -51,7 +50,7 @@ namespace gds_services
                     //SMS on booking 
                     case "booking_sms":
                         sms_sender = new SMS.SMS_Sender(default_sms_gateway,type, key);
-                        sms_template = SMS.SMS_Sender.get_sms_template(type);
+                        sms_template = SMS.SMS_Sender.get_sms_template(type+"2");
                         sms_data = new SMS.SMS_Data(booking_id);
                         sms_text = sms_data.prepare_booking_sms(sms_template);
                         sms_complete_url=sms_sender.send_sms(mobile_no, sms_text);
@@ -66,6 +65,15 @@ namespace gds_services
                         sms_text = sms_data.prepare_booking_sms(sms_template);
                         sms_complete_url=sms_sender.send_sms(mobile_no, sms_text);
                         break;
+
+                    //SMS on booking cancellation
+                    case "pickup_mismatch_sms":
+                        sms_sender = new SMS.SMS_Sender(default_sms_gateway, type, key);
+                        sms_template = SMS.SMS_Sender.get_sms_template(type);
+                        sms_data = new SMS.SMS_Data(booking_id);
+                        sms_text = sms_data.prepare_booking_sms(sms_template);
+                        sms_complete_url = sms_sender.send_sms(mobile_no, sms_text);
+                        break;
                     default:
                         throw new System.Exception("Invalid SMS Type");
                 }
@@ -79,8 +87,7 @@ namespace gds_services
                     {"type",type}
                 }, ex.ToString());
                 response.status = false;
-                //response.error = ex.Message;
-                response.error = ex.ToString();
+                response.error = ex.Message;
             }
             //Log sms into db for accounting purpose;
             SMS.SMS_Sender.log_sms_into_db(booking_id, mobile_no, sms_complete_url, Convert.ToInt32(response.status));
