@@ -19,6 +19,6 @@ namespace gds_services
         
         [OperationContract]
         [WebInvoke(Method = "POST",RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.WrappedRequest, UriTemplate = "send_email")]
-        Email_Response send_email(string type, int booking_id, string email_ids, string cc_email_ids, string subject, Dictionary<string, object> content, Dictionary<string, object> attachments);
+        Email_Response send_email(string type, int booking_id, string email_ids, string cc_email_ids, string subject, string content_dict, string attachments_dict);
     }
 }

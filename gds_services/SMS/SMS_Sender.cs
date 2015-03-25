@@ -175,6 +175,10 @@ namespace gds_services.SMS
                 throw new System.Exception("Booking ID Not Found!");
             }
         }
+        public SMS_Data(Dictionary<string,string> content)
+        {
+            this.content = content;
+        }
         public SMS_Data(string text)
         {
             this.text = text;
@@ -186,6 +190,8 @@ namespace gds_services.SMS
             MatchCollection matchList;
             matchList = Regex.Matches(template, "[=][$][a-zA-Z_]+");
             _template_keys.AddRange(matchList.Cast<Match>().Select(match => match.Value).Distinct().ToList());
+            matchList = Regex.Matches(template, "[[][a-zA-Z_]+[]]");
+            _template_keys.AddRange(matchList.Cast<Match>().Select(match => match.Value).Distinct().ToList());
             return _template_keys;
         }
         public string prepare_booking_sms(string sms_template)
@@ -194,7 +200,7 @@ namespace gds_services.SMS
             List<string> template_keys = get_template_keys(text);
             foreach (string tkey in template_keys)
             {
-                string key = tkey.Trim( new Char[] { '#', '=', '$' } );
+                string key = tkey.Trim( new Char[] { '#', '=', '$', ']', '[' } );
                 if (content.ContainsKey(key))
                 {
                     if (text != null)

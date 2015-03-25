@@ -19,7 +19,7 @@ namespace gds_services
 
         [OperationContract]
         [WebInvoke(Method = "POST", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, BodyStyle = WebMessageBodyStyle.WrappedRequest, UriTemplate = "send_sms")]
-        SMS_Response send_sms(string type, int booking_id, string mobile_no, Dictionary<string, object> content, string key);
+        SMS_Response send_sms(string type, int booking_id, string mobile_no, string content_dict, string key);
 
     }
 

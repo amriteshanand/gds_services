@@ -9,6 +9,7 @@ using System.Configuration;
 using System.Web;
 using System.IO;
 using System.Web.Script.Services;
+using Newtonsoft.Json;
 
 
 namespace gds_services
@@ -35,11 +36,15 @@ namespace gds_services
         {
             return "OK";
         }
-        public Email_Response send_email(string type, int booking_id, string email_ids, string cc_email_ids, string subject, Dictionary<string, object> content, Dictionary<string, object> attachments)
+        public Email_Response send_email(string type, int booking_id, string email_ids, string cc_email_ids, string subject, string content_dict, string attachments_dict)
         {
             Email_Response response = new Email_Response();
             Email.Email email;
             Utils.clsLogger logger = new Utils.clsLogger();
+
+            Dictionary<string,object> content = JsonConvert.DeserializeObject<Dictionary<string, object>>(content_dict);
+            Dictionary<string, object> attachments = JsonConvert.DeserializeObject<Dictionary<string, object>>(attachments_dict);
+
 
             if (type == null || type.Trim().Length == 0)
             {

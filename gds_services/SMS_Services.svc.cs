@@ -6,6 +6,7 @@ using System.ServiceModel;
 using System.Text;
 using gds_services;
 using System.Configuration;
+using Newtonsoft.Json;
 namespace gds_services
 {
     public class SMS_Response : Response
@@ -28,13 +29,14 @@ namespace gds_services
             return "OK";
         }
 
-        public SMS_Response send_sms(string type, int booking_id, string mobile_no, Dictionary<string, object> content, string key)
+        public SMS_Response send_sms(string type, int booking_id, string mobile_no, string content_dict, string key)
         {
 
             SMS_Response response = new SMS_Response();
             response.result.type = type;
             response.result.booking_id = booking_id;
             response.result.mobile_no = mobile_no;
+            Dictionary<string,string> content =  JsonConvert.DeserializeObject<Dictionary<string, string>>(content_dict);
 
             SMS.SMS_Sender sms_sender;
             string sms_template;
@@ -70,7 +72,7 @@ namespace gds_services
                     case "pickup_mismatch_sms":
                         sms_sender = new SMS.SMS_Sender(default_sms_gateway, type, key);
                         sms_template = SMS.SMS_Sender.get_sms_template(type);
-                        sms_data = new SMS.SMS_Data(booking_id);
+                        sms_data = new SMS.SMS_Data(content);
                         sms_text = sms_data.prepare_booking_sms(sms_template);
                         sms_complete_url = sms_sender.send_sms(mobile_no, sms_text);
                         break;
