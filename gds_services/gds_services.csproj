@@ -75,6 +75,12 @@
     <Content Include="lib\log4net.dll" />
     <Content Include="lib\Newtonsoft.Json.Net20.dll" />
     <Content Include="resources\html_templates\Booking_Email.html" />
+    <Content Include="resources\html_templates\img\fb.png" />
+    <Content Include="resources\html_templates\img\g+.png" />
+    <Content Include="resources\html_templates\img\mobile.png" />
+    <Content Include="resources\html_templates\img\twitter.png" />
+    <Content Include="resources\html_templates\img\ty-logo.png" />
+    <Content Include="resources\html_templates\Pickup_Mismatch.html" />
     <Content Include="Service1.svc" />
     <Content Include="SMS_Services.svc" />
     <Content Include="Web.config">

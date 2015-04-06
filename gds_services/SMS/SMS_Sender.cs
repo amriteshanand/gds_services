@@ -68,11 +68,14 @@ namespace gds_services.SMS
                 {
                     curr_tries++;
                     fetch_url = this.gateway_url;
-                    fetch_url = fetch_url.Replace("@@mobile_no", mobile_no);
-                    fetch_url = fetch_url.Replace("@@sms_text", text);
+                    //fetch_url = fetch_url.Replace("@@mobile_no", mobile_no);
+                    //fetch_url = fetch_url.Replace("@@sms_text", text);
+                    fetch_url = fetch_url.Replace("##message##", text);
+                    fetch_url = fetch_url.Replace("##senderid##", "TYaari");
+                    fetch_url = fetch_url.Replace("##mobile##", mobile_no);
                     Utils.HTTP sms_http = new Utils.HTTP();
                     sms_gateway_response = sms_http.GET(fetch_url);
-                    if (sms_gateway_response.ToUpper().Contains("SENT"))
+                    if (sms_gateway_response.ToUpper().Contains("3001"))
                     {
                         success = true;
                     }

@@ -67,10 +67,14 @@ namespace gds_services.Email
             {
                 case "Booking_Email.html":
                 case "Cancellation.html":
+                case "Pickup_Mismatch.html":
                     template = new StreamReader(this.config["directory"].ToString() + template_name).ReadToEnd();
                     break;
                 case "Blank_Email.html":
                     template = "#CONTENT#";
+                    break;
+                case "Table_Email.html":
+                    template = "table";
                     break;
                 default:
                     throw new System.Exception("Invalid Template Type");
@@ -91,23 +95,51 @@ namespace gds_services.Email
             return _template_keys;
         }
 
+        // Takes in content and creates a table
+        private string convert_to_html(Dictionary<string, object> content)
+        { 
+            string html = @"<table style=""border:1px solid black"">";
+            //add header row
+            html += "<tr>";
+            for (int i = 0; i < content.Count; i++)
+                html += @"<th style=""border:1px solid black"">" + content.Keys + "</th>";
+            html += "</tr>";
+            //add rows
+            for (int i = 0; i < content.Count; i++)
+            {
+                html += "<tr>";
+                for (int j = 0; j < content.Values.Count; j++)
+                    html += @"<td style=""border:1px solid black"">" + content.Values.ToString() + "</td>";
+                html += "</tr>";
+            }
+            html += "</table>";
+            return html;
+        }
         // Takes in content,template and patches them.
         public string prepare(string template, Dictionary<string, object> content)
         {
             string prepared_data = template;
-            List<string> template_keys = get_template_keys(template);
-            foreach (string key in template_keys)
+            if (prepared_data == "table")
             {
-                if (content.ContainsKey(key))
+                prepared_data = convert_to_html(content);
+            }
+            else
+            {
+                List<string> template_keys = get_template_keys(template);
+                foreach (string tkey in template_keys)
                 {
-                    if (prepared_data != null)
+                    string key = tkey.Trim(new Char[] { '#', '=', '$', ']', '[' });
+                    if (content.ContainsKey(key))
                     {
-                        prepared_data = prepared_data.Replace(key, content[key] as string);
+                        if (prepared_data != null)
+                        {
+                            prepared_data = prepared_data.Replace(tkey, content[key].ToString());
+                        }
                     }
-                }
-                else
-                {
-                    throw new System.Exception("Template data " + key + " not found");
+                    else
+                    {
+                        throw new System.Exception("Template data " + key + " not found");
+                    }
                 }
             }
             return prepared_data;
@@ -124,8 +156,14 @@ namespace gds_services.Email
         // Attach File 
         private void attach_file(Dictionary<string, object> render_data)
         {
-            string file_name = this.config["default_attachment"].ToString();
-            create_attachment(file_name, render_data);
+            try
+            {
+                string file_name = this.config["default_attachment"].ToString();
+                create_attachment(file_name, render_data);
+            }
+            catch
+            {
+            }
         }
 
         //Creates Attachment

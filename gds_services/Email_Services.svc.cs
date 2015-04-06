@@ -65,6 +65,10 @@ namespace gds_services
                     case "cancel_email":
                     //Email on booking cancellation
                     case "blank_email":
+                    //Email in table format
+                    case "table_email":
+                    //Email in table format
+                    case "pickup_mismatch":
                         email = new Email.Email(type, subject, content,attachments);
                         response.status = email.send_email(booking_id, email_ids, cc_email_ids);
                         break;

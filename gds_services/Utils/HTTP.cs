@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Net;
 using System.IO;
+using System.Text;
 namespace gds_services.Utils
 {
     public class HTTP
@@ -62,10 +63,20 @@ namespace gds_services.Utils
             HttpWebResponse http_resp = (HttpWebResponse)http_req.GetResponse();
             if (http_resp.StatusCode == HttpStatusCode.OK)
             {
-                long n = http_resp.ContentLength;
-                byte[] tempBuffer = new byte[n];
-                http_resp.GetResponseStream().Read(tempBuffer, 0, (int)n);
-                string res = System.Text.Encoding.UTF8.GetString(tempBuffer);
+                string res;
+                StringBuilder respBody = new StringBuilder();
+                byte[] buf = new byte[8192];
+                Stream respStream = http_resp.GetResponseStream();
+                int count = 0;
+                do
+                {
+                    count = respStream.Read(buf, 0, buf.Length);
+                    if (count != 0)
+                        respBody.Append(Encoding.ASCII.GetString(buf, 0, count));
+                }
+                while (count > 0);
+                res = respBody.ToString();
+                http_resp.Close();
                 return res;
             }
             else
