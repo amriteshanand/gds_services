@@ -220,7 +220,7 @@ namespace gds_services.Email
                 }
                 string[] cc_email_id_list = cc_email_ids.Split(',');
                 foreach (string cc_email_id in cc_email_id_list)
-                    message.To.Add(new MailAddress(cc_email_id));
+                    message.Bcc.Add(new MailAddress(cc_email_id));
                 message.BodyEncoding = System.Text.Encoding.UTF8;
                 message.Body = this.body;
                 message.IsBodyHtml = true;
