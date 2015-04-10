@@ -56,7 +56,7 @@ namespace gds_services.SMS
         /*
          * This method can be used to send sms
          */
-        public string send_sms(string mobile_no,string text)
+        public string send_sms(string mobile_no,string text, string tag)
         {
             int curr_tries = 0;
             bool success = false;
@@ -71,7 +71,7 @@ namespace gds_services.SMS
                     //fetch_url = fetch_url.Replace("@@mobile_no", mobile_no);
                     //fetch_url = fetch_url.Replace("@@sms_text", text);
                     fetch_url = fetch_url.Replace("##message##", text);
-                    fetch_url = fetch_url.Replace("##senderid##", "TYaari");
+                    fetch_url = fetch_url.Replace("##senderid##", tag);
                     fetch_url = fetch_url.Replace("##mobile##", mobile_no);
                     Utils.HTTP sms_http = new Utils.HTTP();
                     sms_gateway_response = sms_http.GET(fetch_url);

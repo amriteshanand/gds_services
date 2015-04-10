@@ -43,6 +43,7 @@ namespace gds_services
             SMS.SMS_Data sms_data;
             string sms_text;
             string sms_complete_url="";
+            string tag = "";
             Utils.clsLogger logger = new Utils.clsLogger();
             string default_sms_gateway=ConfigurationManager.AppSettings["DEFAULT_SMS_GATEWAY"].ToString();
             try
@@ -55,7 +56,8 @@ namespace gds_services
                         sms_template = SMS.SMS_Sender.get_sms_template(type+"2");
                         sms_data = new SMS.SMS_Data(booking_id);
                         sms_text = sms_data.prepare_booking_sms(sms_template);
-                        sms_complete_url=sms_sender.send_sms(mobile_no, sms_text);
+                        tag = "TYAARI";
+                        sms_complete_url=sms_sender.send_sms(mobile_no, sms_text, tag);
                         response.status = true;
                         break;
 
@@ -65,20 +67,29 @@ namespace gds_services
                         sms_template = SMS.SMS_Sender.get_sms_template(type);
                         sms_data = new SMS.SMS_Data(booking_id);
                         sms_text = sms_data.prepare_booking_sms(sms_template);
-                        sms_complete_url=sms_sender.send_sms(mobile_no, sms_text);
+                        tag = "TYAARI";
+                        sms_complete_url=sms_sender.send_sms(mobile_no, sms_text, tag);
                         response.status = true;
                         break;
 
                     //SMS on booking cancellation
-                    case "pickup_mismatch_sms":
-                    case "pickup_mismatch_usms":
-                    case "pickup_mismatch_sms_ty":
-                    case "pickup_mismatch_usms_ty":
+                    case "pickup_mismatch_sms_gds":
                         sms_sender = new SMS.SMS_Sender(default_sms_gateway, type, key);
                         sms_template = SMS.SMS_Sender.get_sms_template(type);
                         sms_data = new SMS.SMS_Data(content);
                         sms_text = sms_data.prepare_booking_sms(sms_template);
-                        sms_complete_url = sms_sender.send_sms(mobile_no, sms_text);
+                        tag = "IamGDS";
+                        sms_complete_url=sms_sender.send_sms(mobile_no, sms_text,tag);
+                        response.status = true;
+                        break;
+
+                    case "pickup_mismatch_sms_ty":
+                        sms_sender = new SMS.SMS_Sender(default_sms_gateway, type, key);
+                        sms_template = SMS.SMS_Sender.get_sms_template(type);
+                        sms_data = new SMS.SMS_Data(content);
+                        sms_text = sms_data.prepare_booking_sms(sms_template);
+                        tag = "TYAARI";
+                        sms_complete_url=sms_sender.send_sms(mobile_no, sms_text,tag);
                         response.status = true;
                         break;
                     default:
