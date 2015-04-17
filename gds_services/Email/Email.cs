@@ -68,6 +68,7 @@ namespace gds_services.Email
                 case "Booking_Email.html":
                 case "Cancellation.html":
                 case "Pickup_Mismatch.html":
+                case "Pickup_Reminder.html":
                     template = new StreamReader(this.config["directory"].ToString() + template_name).ReadToEnd();
                     break;
                 case "Blank_Email.html":

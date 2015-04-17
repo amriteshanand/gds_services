@@ -75,6 +75,7 @@
     <Content Include="lib\log4net.dll" />
     <Content Include="lib\Newtonsoft.Json.Net20.dll" />
     <Content Include="resources\html_templates\Booking_Email.html" />
+    <Content Include="resources\html_templates\Pickup_Reminder.html" />
     <Content Include="resources\html_templates\Pickup_Mismatch.html" />
     <Content Include="Service1.svc" />
     <Content Include="SMS_Services.svc" />
