@@ -198,30 +198,34 @@ namespace gds_services.Email
             {
                 string smtpServer = ConfigurationManager.AppSettings["SMTPServer"].ToString();
                 string smtpPort = ConfigurationManager.AppSettings["SMTPPort"].ToString();
-                string fromEmailId = this.config["sender_email_id"].ToString();
-                string fromEmailPassword = this.config["sender_password"].ToString();
+                string fromEmailId = ConfigurationManager.AppSettings["TYEmailID"].ToString();
+                string fromEmailPassword = ConfigurationManager.AppSettings["TYEmailPassword"].ToString();
                 SmtpClient smtp = new SmtpClient(smtpServer, Convert.ToInt32(smtpPort));
                 smtp.UseDefaultCredentials = false;
                 smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
                 smtp.Timeout = 100000;
                 smtp.EnableSsl = true;
                 smtp.Credentials = new System.Net.NetworkCredential(fromEmailId, fromEmailPassword);
-                message.From = new MailAddress(fromEmailId);
+                message.From = new MailAddress("donotreply@travelyaari.com");
                 message.Subject = this.subject;
                 string[] to_email_id_list = to_email_ids.Split(',');
                 foreach (string to_email_id in to_email_id_list)
                     message.To.Add(new MailAddress(to_email_id));
-                if (cc_email_ids == null || cc_email_ids.Trim().Length == 0)
+                if (this.config["default_cc_email"].ToString().Length > 0)
                 {
-                    cc_email_ids = this.config["default_cc_email"].ToString();
-                }
-                else
-                {
-                    cc_email_ids = cc_email_ids + "," + this.config["default_cc_email"].ToString();
+                    if (cc_email_ids == null || cc_email_ids.Trim().Length == 0)
+                    {
+                        cc_email_ids = this.config["default_cc_email"].ToString();
+                    }
+                    else
+                    {
+                        cc_email_ids = cc_email_ids + "," + this.config["default_cc_email"].ToString();
+                    }
                 }
                 string[] cc_email_id_list = cc_email_ids.Split(',');
                 foreach (string cc_email_id in cc_email_id_list)
-                    message.Bcc.Add(new MailAddress(cc_email_id));
+                    if(cc_email_id.Length>0)
+                        message.Bcc.Add(new MailAddress(cc_email_id));
                 message.BodyEncoding = System.Text.Encoding.UTF8;
                 message.Body = this.body;
                 message.IsBodyHtml = true;
