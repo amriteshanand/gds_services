@@ -59,26 +59,22 @@ namespace gds_services.Email
             return;
         }
         
-        
+        //Get template from template_name
         private string get_template(string template_name)
         {
             string template = "";
-            switch (template_name)
+            string[] valid_email_templates = ConfigurationManager.AppSettings["Valid_Email_Templates"].ToString().Split(',');
+            if (valid_email_templates.Contains(template_name))
             {
-                case "Booking_Email.html":
-                case "Cancellation.html":
-                case "Pickup_Mismatch.html":
-                case "Pickup_Reminder.html":
-                    template = new StreamReader(this.config["directory"].ToString() + template_name).ReadToEnd();
-                    break;
-                case "Blank_Email.html":
-                    template = "#CONTENT#";
-                    break;
-                case "Table_Email.html":
-                    template = "table";
-                    break;
-                default:
-                    throw new System.Exception("Invalid Template Type");
+                template = new StreamReader(this.config["directory"].ToString() + template_name).ReadToEnd();
+            }
+            else if ("Blank_Email.html" == template_name)
+            {
+                template = "#CONTENT#";
+            }
+            else
+            {
+                throw new System.Exception("Invalid Template Type");
             }
             if (template == null || template.Trim().Length == 0)
             {
@@ -87,7 +83,7 @@ namespace gds_services.Email
             return template;
         }
 
-        //Get all keys capitalletters and _ quoted between #
+        //Get all keys(capitalletters and _ quoted between #)
         private List<string> get_template_keys(string template)
         {
             List<string> _template_keys = new List<string>();
@@ -116,6 +112,7 @@ namespace gds_services.Email
             html += "</table>";
             return html;
         }
+        
         // Takes in content,template and patches them.
         public string prepare(string template, Dictionary<string, object> content)
         {
@@ -159,8 +156,11 @@ namespace gds_services.Email
         {
             try
             {
-                string file_name = this.config["default_attachment"].ToString();
-                create_attachment(file_name, render_data);
+                if (render_data.Count > 0)
+                {
+                    string file_name = this.config["default_attachment"].ToString();
+                    create_attachment(file_name, render_data);
+                }
             }
             catch
             {
@@ -189,9 +189,8 @@ namespace gds_services.Email
         }
 
         //sends the message.
-        public bool send_email(int booking_id, string to_email_ids, string cc_email_ids)
+        public bool send_email(int booking_id, string to_email_ids, string cc_email_ids, string bcc_email_ids)
         {
-            Email_Response response = new Email_Response();
             Utils.clsLogger logger = new Utils.clsLogger();
             MailMessage message = new MailMessage();
             try
@@ -222,17 +221,31 @@ namespace gds_services.Email
                         cc_email_ids = cc_email_ids + "," + this.config["default_cc_email"].ToString();
                     }
                 }
+                if (this.config["default_bcc_email"].ToString().Length > 0)
+                {
+                    if (cc_email_ids == null || cc_email_ids.Trim().Length == 0)
+                    {
+                        bcc_email_ids = this.config["default_bcc_email"].ToString();
+                    }
+                    else
+                    {
+                        bcc_email_ids = bcc_email_ids + "," + this.config["default_bcc_email"].ToString();
+                    }
+                }
                 string[] cc_email_id_list = cc_email_ids.Split(',');
                 foreach (string cc_email_id in cc_email_id_list)
                     if(cc_email_id.Length>0)
-                        message.Bcc.Add(new MailAddress(cc_email_id));
+                        message.CC.Add(new MailAddress(cc_email_id));
+                string[] bcc_email_id_list = bcc_email_ids.Split(',');
+                foreach (string bcc_email_id in bcc_email_id_list)
+                    if (bcc_email_id.Length > 0)
+                        message.Bcc.Add(new MailAddress(bcc_email_id));
                 message.BodyEncoding = System.Text.Encoding.UTF8;
                 message.Body = this.body;
                 message.IsBodyHtml = true;
                 foreach (string temp_attachment in temp_attachments)
                     message.Attachments.Add(new Attachment(temp_attachment));
                 smtp.Send(message);
-                response.status = true;
             }
             catch (Exception ex)
             {
@@ -240,33 +253,38 @@ namespace gds_services.Email
                 {   {"booking_id",booking_id},
                     {"email_ids",to_email_ids},
                     {"cc_email_ids",cc_email_ids},
+                    {"bcc_email_ids",cc_email_ids},
                     {"type",type}
                 }, ex.ToString());
-                response.status = false;
-                response.error = ex.ToString();
+                if (message != null)
+                    message.Dispose(); 
+                return false;
             }
             finally
             {
                 if (message != null)
                     message.Dispose();
             }
-            //Email.log_email_into_db(type, booking_id, to_email_ids, cc_email_ids, response.error, Convert.ToInt32(response.status));
-            return response.status;
+            return true;
         }
         
-        //SP not implemented. Not required feature.
-        public static void log_email_into_db(string type, int booking_id, string to_email_ids, string cc_email_ids, string error, int is_sent)
+        //Log email in db
+        public static void log_email_into_db(string type, int booking_id, string to_email_ids, string cc_email_ids, string bcc_email_ids, string error, int is_sent)
         {
             DB.clsDB db = new DB.clsDB();
             db.AddParameter("TYPE", type, 20);
             db.AddParameter("BOOKING_ID", booking_id);
-            db.AddParameter("To_Email_IDS", to_email_ids, 200);
-            db.AddParameter("CC_Email_IDS", cc_email_ids, 200);
+            db.AddParameter("TO_EMAIL_ID", to_email_ids, 200);
+            db.AddParameter("CC_EMAIL_ID", cc_email_ids, 200);
+            db.AddParameter("BCC_EMAIL_ID", cc_email_ids, 200);
             db.AddParameter("SEND_TIME", DateTime.Now);
             db.AddParameter("ERROR", error, 20);
             db.AddParameter("IS_SENT", is_sent);
             db.ExecuteDML("spEmailLog_Insert", CommandType.StoredProcedure, 30);
+
         }
+
+        //Destructor
         ~Email()
         {
             for (int i = 0; i < temp_attachments.Count; i++)

@@ -22,10 +22,10 @@ namespace gds_services
             public int booking_id;
             public string email_ids;
             public string cc_email_ids;
+            public string bcc_email_ids;
             public bool status;
         }
         public Email_Result result = new Email_Result();
-        //public Dictionary<string,object> result = new Dictionary<string,object>();
     }
 
     // NOTE: You can use the "Rename" command on the "Refactor" menu to change the class name "Email_Services" in code, svc and config file together.
@@ -36,46 +36,45 @@ namespace gds_services
         {
             return "OK";
         }
-        public Email_Response send_email(string type, int booking_id, string email_ids, string cc_email_ids, string subject, string content_dict, string attachments_dict)
+        public Email_Response send_email(string type, int booking_id, string email_ids, string cc_email_ids, string bcc_email_ids, string subject, string content_dict, string attachments_dict)
         {
             Email_Response response = new Email_Response();
             Email.Email email;
             Utils.clsLogger logger = new Utils.clsLogger();
-
-            Dictionary<string,object> content = JsonConvert.DeserializeObject<Dictionary<string, object>>(content_dict);
-            Dictionary<string, object> attachments = JsonConvert.DeserializeObject<Dictionary<string, object>>(attachments_dict);
-
+            Dictionary<string, object> content = new Dictionary<string, object>();
+            Dictionary<string, object> attachments = new Dictionary<string, object>();
 
             if (type == null || type.Trim().Length == 0)
             {
                 type = "blank_email";
             }
+            
+            content = JsonConvert.DeserializeObject<Dictionary<string, object>>(content_dict);
+            
+            if (attachments_dict != null)
+            {
+                attachments = JsonConvert.DeserializeObject<Dictionary<string, object>>(attachments_dict);
+            }
+
+            string[] valid_email_types = ConfigurationManager.AppSettings["Valid_Email_Types"].ToString().Split(',');
+
             try
             {
                 response.result.type = type;
                 response.result.booking_id = booking_id;
                 response.result.email_ids = email_ids;
                 response.result.cc_email_ids = cc_email_ids;
+                response.result.bcc_email_ids = bcc_email_ids;
                 response.status = true;
-                switch (type)
+
+                if(valid_email_types.Contains(type))
                 {
-                    //Email on booking 
-                    case "booking_email":
-                    //Email on booking cancellation
-                    case "cancel_email":
-                    //Email on booking cancellation
-                    case "blank_email":
-                    //Email in table format
-                    case "table_email":
-                    //Email in table format
-                    case "pickup_mismatch":
-                    case "pickup_reminder":
-                    case "orp_email":
-                        email = new Email.Email(type, subject, content,attachments);
-                        response.status = email.send_email(booking_id, email_ids, cc_email_ids);
-                        break;
-                    default:
-                        throw new System.Exception("Invalid Email Type");
+                    email = new Email.Email(type, subject, content,attachments);
+                    response.status = email.send_email(booking_id, email_ids, cc_email_ids, bcc_email_ids);
+                }
+                else
+                {
+                    throw new System.Exception("Invalid Email Type");
                 }
             }
             catch (System.Exception ex)
@@ -84,13 +83,15 @@ namespace gds_services
                 {   {"booking_id",booking_id},
                     {"email_ids",email_ids},
                     {"cc_email_ids",cc_email_ids},
+                    {"bcc_email_ids",bcc_email_ids},
                     {"type",type}
                 }, ex.ToString());
                 response.status = false;
                 response.error = ex.Message;
             }
-            //Log email into db; Commented as not required.
-            //Email.Email.log_email_into_db(type, booking_id, response.result.email_ids, response.result.cc_email_ids, response.error,Convert.ToInt32(response.status));
+
+            //Log email into db;
+            Email.Email.log_email_into_db(type, booking_id, response.result.email_ids, response.result.cc_email_ids, response.result.bcc_email_ids, response.error, Convert.ToInt32(response.status));
             return response;
         }
     }

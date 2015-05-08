@@ -43,33 +43,26 @@ namespace gds_services
             SMS.SMS_Data sms_data;
             string sms_text;
             string sms_complete_url="";
-            string tag = "TYARRI";
+            string tag = "TYAARI";
             Utils.clsLogger logger = new Utils.clsLogger();
             string default_sms_gateway=ConfigurationManager.AppSettings["DEFAULT_SMS_GATEWAY"].ToString();
+            string[] valid_sms_types = ConfigurationManager.AppSettings["Valid_SMS_Types"].ToString().Split(',');
             try
             {
-                switch (type)
+                if(valid_sms_types.Contains(type))
                 {
-                    //SMS on booking 
-                    case "booking_sms_ty":
-                    case "booking_sms_gds":
-                    case "cancel_sms_ty":
-                    case "cancel_sms_gds":
-                    case "pickup_mismatch_sms_ty":
-                    case "pickup_mismatch_sms_gds":
-                    case "pickup_reminder_sms_ty":
-                    case "pickup_reminder_sms_gds":
-                        if (type.EndsWith("gds"))
-                            tag = "IamGDS";
-                        sms_sender = new SMS.SMS_Sender(default_sms_gateway,type, key);
-                        sms_template = SMS.SMS_Sender.get_sms_template(type);
-                        sms_data = new SMS.SMS_Data(content);
-                        sms_text = sms_data.prepare_booking_sms(sms_template);
-                        sms_complete_url=sms_sender.send_sms(mobile_no, sms_text, tag);
-                        response.status = true;
-                        break;
-                    default:
-                        throw new System.Exception("Invalid SMS Type");
+                    if (type.EndsWith("gds"))
+                        tag = "IamGDS";
+                    sms_sender = new SMS.SMS_Sender(default_sms_gateway,type, key);
+                    sms_template = SMS.SMS_Sender.get_sms_template(type);
+                    sms_data = new SMS.SMS_Data(content);
+                    sms_text = sms_data.prepare_booking_sms(sms_template);
+                    sms_complete_url=sms_sender.send_sms(mobile_no, sms_text, tag);
+                    response.status = true;
+                }
+                else
+                {
+                    throw new System.Exception("Invalid SMS Type");
                 }
 
             }
@@ -83,6 +76,7 @@ namespace gds_services
                 response.status = false;
                 response.error = ex.Message;
             }
+
             //Log sms into db for accounting purpose;
             SMS.SMS_Sender.log_sms_into_db(booking_id, mobile_no, sms_complete_url, Convert.ToInt32(response.status));
             return response;

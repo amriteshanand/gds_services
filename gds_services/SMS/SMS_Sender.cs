@@ -12,36 +12,16 @@ namespace gds_services.SMS
     public class SMS_Sender
     {
         public string gateway_url = null;
-        public string client_key = null;
         public string type = null;
-        public int max_retries;
         private Utils.clsLogger logger;
-        /*
-         * gateway: pass gateway name to be used and gateway configuration must be added in configuration
-         * client_key: to authorise client
-         */
+
         public SMS_Sender(string gateway,string type, string client_key)
         {
             this.gateway_url = SMS_Sender.get_sms_gateway(gateway);
             this.validate_client_key(type, client_key);
-            this.client_key = client_key;
-            this.init_config();
             this.logger = new Utils.clsLogger();
             this.type = type;
         }
-
-        private void init_config(){
-            max_retries = 1;
-            try
-            {
-                max_retries = Convert.ToInt32(ConfigurationManager.AppSettings["SMS_MAX_RETRIES"]);
-            }
-            catch (System.Exception ex)
-            { 
-
-            }
-        }
-
         private void validate_client_key(string type,string client_key)
         { 
             string salt=ConfigurationManager.AppSettings["API_KEY_SALT"].ToString();
@@ -52,45 +32,26 @@ namespace gds_services.SMS
                 throw new System.Exception("Invalid key !");
             }
         }
-
-        /*
-         * This method can be used to send sms
-         */
         public string send_sms(string mobile_no,string text, string tag)
         {
-            int curr_tries = 0;
             bool success = false;
             string sms_gateway_response="";
             string fetch_url ="";
-            while (curr_tries < this.max_retries)
+            try
             {
-                try
-                {
-                    curr_tries++;
-                    fetch_url = this.gateway_url;
-                    //fetch_url = fetch_url.Replace("@@mobile_no", mobile_no);
-                    //fetch_url = fetch_url.Replace("@@sms_text", text);
-                    fetch_url = fetch_url.Replace("##message##", text);
-                    fetch_url = fetch_url.Replace("##senderid##", tag);
-                    fetch_url = fetch_url.Replace("##mobile##", mobile_no);
-                    Utils.HTTP sms_http = new Utils.HTTP();
-                    sms_gateway_response = sms_http.GET(fetch_url);
-                    if (sms_gateway_response.ToUpper().Contains("3001"))
-                    {
-                        success = true;
-                    }
-                    else 
-                    {
-                        success = false;
-
-                    }                    
-                    break;
-                }
-                catch (System.Exception ex)
-                {
-                    logger.log("error", ex);
-                    continue;
-                }
+                fetch_url = this.gateway_url;
+                //fetch_url = fetch_url.Replace("@@mobile_no", mobile_no);
+                //fetch_url = fetch_url.Replace("@@sms_text", text);
+                fetch_url = fetch_url.Replace("##message##", text);
+                fetch_url = fetch_url.Replace("##senderid##", tag);
+                fetch_url = fetch_url.Replace("##mobile##", mobile_no);
+                Utils.HTTP sms_http = new Utils.HTTP();
+                sms_gateway_response = sms_http.GET(fetch_url);
+                success = sms_gateway_response.ToUpper().Contains("3001");
+            }
+            catch (System.Exception ex)
+            {
+                logger.log("error", ex);
             }
             if (!success) {
                 this.logger.log("fatal", sms_gateway_response);
@@ -98,10 +59,6 @@ namespace gds_services.SMS
             }
             return fetch_url;
         }
-        
-        /*
-         * Static Methods
-         */
         private static string get_sms_gateway(string gateway_name)
         {
             string gateway_url=ConfigurationManager.AppSettings[gateway_name];
@@ -156,12 +113,12 @@ namespace gds_services.SMS
         public string text=null;
         List<Dictionary<string, object>> details_list;
         Dictionary<string, string> content;
-        public SMS_Data(int booking_id)
+        public SMS_Data(int booking_id,string method)
         {
             DB.clsDB db = new DB.clsDB();
             content = new Dictionary<string,string>();
             db.AddParameter("BOOKING_ID", booking_id);
-            DataSet ds = db.ExecuteSelect("WS_GET_BOOKING_DETAILS_Amritesh", System.Data.CommandType.StoredProcedure, 30);
+            DataSet ds = db.ExecuteSelect(method, System.Data.CommandType.StoredProcedure, 30);
             if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
             {
                 details_list = ds.Tables[0].AsEnumerable().Select(dr => ds.Tables[0].Columns.Cast<DataColumn>().ToDictionary(dc => dc.ColumnName, dc => dr[dc])).ToList();
@@ -186,7 +143,6 @@ namespace gds_services.SMS
         {
             this.text = text;
         }
-        //Get all keys starting with =$
         private List<string> get_template_keys(string template)
         {
             List<string> _template_keys = new List<string>();
@@ -218,6 +174,5 @@ namespace gds_services.SMS
             }
             return text;
         }
-        
     }
 }
