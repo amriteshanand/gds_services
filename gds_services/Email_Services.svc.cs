@@ -70,6 +70,7 @@ namespace gds_services
                     //Email in table format
                     case "pickup_mismatch":
                     case "pickup_reminder":
+                    case "orp_email":
                         email = new Email.Email(type, subject, content,attachments);
                         response.status = email.send_email(booking_id, email_ids, cc_email_ids);
                         break;

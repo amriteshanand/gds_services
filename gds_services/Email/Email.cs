@@ -206,7 +206,7 @@ namespace gds_services.Email
                 smtp.Timeout = 100000;
                 smtp.EnableSsl = true;
                 smtp.Credentials = new System.Net.NetworkCredential(fromEmailId, fromEmailPassword);
-                message.From = new MailAddress("donotreply@travelyaari.com");
+                message.From = new MailAddress(this.config["from_email_id"].ToString());
                 message.Subject = this.subject;
                 string[] to_email_id_list = to_email_ids.Split(',');
                 foreach (string to_email_id in to_email_id_list)
