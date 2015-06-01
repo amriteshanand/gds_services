@@ -52,12 +52,12 @@ namespace gds_services
                 if(valid_sms_types.Contains(type))
                 {
                     if (type.EndsWith("gds"))
-                        tag = "IamGDS";
+                        tag = "Mantis";
                     sms_sender = new SMS.SMS_Sender(default_sms_gateway,type, key);
                     sms_template = SMS.SMS_Sender.get_sms_template(type);
                     sms_data = new SMS.SMS_Data(content);
                     sms_text = sms_data.prepare_booking_sms(sms_template);
-                    sms_complete_url=sms_sender.send_sms(mobile_no, sms_text, tag);
+                    sms_complete_url = sms_sender.send_sms(mobile_no, sms_text, tag);
                     response.status = true;
                 }
                 else

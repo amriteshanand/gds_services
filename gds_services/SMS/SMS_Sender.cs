@@ -6,6 +6,7 @@ using System.Configuration;
 using gds_services;
 using System.Data;
 using System.Text.RegularExpressions;
+using System.Collections.Specialized;
 
 namespace gds_services.SMS
 {
@@ -17,7 +18,7 @@ namespace gds_services.SMS
 
         public SMS_Sender(string gateway,string type, string client_key)
         {
-            this.gateway_url = SMS_Sender.get_sms_gateway(gateway);
+            this.gateway_url = SMS_Sender.get_sms_gateway(gateway,type);
             this.validate_client_key(type, client_key);
             this.logger = new Utils.clsLogger();
             this.type = type;
@@ -40,14 +41,15 @@ namespace gds_services.SMS
             try
             {
                 fetch_url = this.gateway_url;
-                //fetch_url = fetch_url.Replace("@@mobile_no", mobile_no);
-                //fetch_url = fetch_url.Replace("@@sms_text", text);
-                fetch_url = fetch_url.Replace("##message##", text);
-                fetch_url = fetch_url.Replace("##senderid##", tag);
-                fetch_url = fetch_url.Replace("##mobile##", mobile_no);
+                fetch_url = fetch_url.Replace("@@mobile_no", mobile_no);
+                fetch_url = fetch_url.Replace("@@sms_text", text);
+                fetch_url = fetch_url.Replace("@@senderid", tag);
                 Utils.HTTP sms_http = new Utils.HTTP();
                 sms_gateway_response = sms_http.GET(fetch_url);
                 success = sms_gateway_response.ToUpper().Contains("3001");
+                if(!success)
+                    success = sms_gateway_response.ToUpper().Contains("SENT");
+                
             }
             catch (System.Exception ex)
             {
@@ -59,9 +61,12 @@ namespace gds_services.SMS
             }
             return fetch_url;
         }
-        private static string get_sms_gateway(string gateway_name)
+        private static string get_sms_gateway(string gateway_name, string type)
         {
             string gateway_url=ConfigurationManager.AppSettings[gateway_name];
+            NameValueCollection gateways = (NameValueCollection)ConfigurationManager.GetSection("sms_gateway");
+            try { gateway_url = gateways[type]; }
+            catch { }
             if(gateway_url!=null && gateway_url.Trim().Length>0)
             {
                 return gateway_url;
