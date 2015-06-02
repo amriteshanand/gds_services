@@ -91,7 +91,7 @@ namespace gds_services
             }
 
             //Log email into db;
-            Email.Email.log_email_into_db(type, booking_id, response.result.email_ids, response.result.cc_email_ids, response.result.bcc_email_ids, response.error, Convert.ToInt32(response.status));
+            //Email.Email.log_email_into_db(type, booking_id, response.result.email_ids, response.result.cc_email_ids, response.result.bcc_email_ids, response.error, Convert.ToInt32(response.status));
             return response;
         }
     }

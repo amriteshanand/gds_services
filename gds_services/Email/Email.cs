@@ -192,6 +192,12 @@ namespace gds_services.Email
         public bool send_email(int booking_id, string to_email_ids, string cc_email_ids, string bcc_email_ids)
         {
             Utils.clsLogger logger = new Utils.clsLogger();
+            if (to_email_ids == null)
+                to_email_ids = ""; 
+            if (cc_email_ids == null)
+                cc_email_ids = ""; 
+            if (bcc_email_ids == null)
+                bcc_email_ids = "";
             MailMessage message = new MailMessage();
             try
             {
