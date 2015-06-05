@@ -215,7 +215,8 @@ namespace gds_services.Email
                 message.Subject = this.subject;
                 string[] to_email_id_list = to_email_ids.Split(',');
                 foreach (string to_email_id in to_email_id_list)
-                    message.To.Add(new MailAddress(to_email_id));
+                    if(to_email_id.Length>0)
+                        message.To.Add(new MailAddress(to_email_id));
                 if (this.config["default_cc_email"].ToString().Length > 0)
                 {
                     if (cc_email_ids == null || cc_email_ids.Trim().Length == 0)
