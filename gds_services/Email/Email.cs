@@ -87,8 +87,8 @@ namespace gds_services.Email
         private List<string> get_template_keys(string template)
         {
             List<string> _template_keys = new List<string>();
-            MatchCollection matchList = Regex.Matches(template, "#[A-Z_]+#");
-            _template_keys = matchList.Cast<Match>().Select(match => match.Value).Distinct().ToList();
+            MatchCollection matchList = Regex.Matches(template, "#(?<key>[A-Z_]+)#");
+            _template_keys = matchList.Cast<Match>().Select(match => match.Groups["key"].Value).Distinct().ToList();
             return _template_keys;
         }
 
@@ -124,14 +124,20 @@ namespace gds_services.Email
             else
             {
                 List<string> template_keys = get_template_keys(template);
+                List<string> content_keys = new List<string>(this.content.Keys);
+                IEnumerable<string> missed_keys = template_keys.Except(content_keys);
+                if (missed_keys.Count() > 0)
+                {
+                    throw new System.Exception("Template data " + String.Join(",",missed_keys)+ " not found");
+                }
                 foreach (string tkey in template_keys)
                 {
-                    string key = tkey.Trim(new Char[] { '#', '=', '$', ']', '[' });
+                    string key = tkey.Trim(new Char[] {'#'});
                     if (content.ContainsKey(key))
                     {
                         if (prepared_data != null)
                         {
-                            prepared_data = prepared_data.Replace(tkey, content[key].ToString());
+                            prepared_data = prepared_data.Replace("#"+tkey+"#", content[key].ToString());
                         }
                     }
                     else
