@@ -58,6 +58,7 @@ namespace gds_services
 
             string[] valid_email_types = ConfigurationManager.AppSettings["Valid_Email_Types"].ToString().Split(',');
 
+            int success = 1;
             try
             {
                 response.result.type = type;
@@ -79,6 +80,7 @@ namespace gds_services
             }
             catch (System.Exception ex)
             {
+                success = 0;
                 logger.log("error", new Dictionary<string, object>
                 {   {"booking_id",booking_id},
                     {"email_ids",email_ids},
@@ -90,6 +92,16 @@ namespace gds_services
                 response.error = ex.Message;
             }
 
+            if (success == 1)
+            {
+                logger.log("info", new Dictionary<string, object>
+                {   {"booking_id",booking_id},
+                    {"email_ids",email_ids},
+                    {"cc_email_ids",cc_email_ids},
+                    {"bcc_email_ids",bcc_email_ids},
+                    {"type",type}
+                }, "success");
+            }
             //Log email into db;
             //Email.Email.log_email_into_db(type, booking_id, response.result.email_ids, response.result.cc_email_ids, response.result.bcc_email_ids, response.error, Convert.ToInt32(response.status));
             return response;
