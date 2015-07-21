@@ -38,26 +38,33 @@ namespace gds_services.SMS
             bool success = false;
             string sms_gateway_response="";
             string fetch_url ="";
-            try
+
+            string[] mobile_nos = mobile_no.Split(',');
+            foreach (string mobile in mobile_nos)
             {
-                fetch_url = this.gateway_url;
-                fetch_url = fetch_url.Replace("@@mobile_no", mobile_no);
-                fetch_url = fetch_url.Replace("@@sms_text", text);
-                fetch_url = fetch_url.Replace("@@senderid", tag);
-                Utils.HTTP sms_http = new Utils.HTTP();
-                sms_gateway_response = sms_http.GET(fetch_url);
-                success = sms_gateway_response.ToUpper().Contains("3001");
-                if(!success)
-                    success = sms_gateway_response.ToUpper().Contains("SENT");
-                
-            }
-            catch (System.Exception ex)
-            {
-                logger.log("error", ex);
-            }
-            if (!success) {
-                this.logger.log("fatal", sms_gateway_response);
-                throw new System.Exception("Failed to send sms");                
+                try
+                {
+                    success = false;
+                    fetch_url = this.gateway_url;
+                    fetch_url = fetch_url.Replace("@@mobile_no", mobile);
+                    fetch_url = fetch_url.Replace("@@sms_text", text);
+                    fetch_url = fetch_url.Replace("@@senderid", tag);
+                    Utils.HTTP sms_http = new Utils.HTTP();
+                    sms_gateway_response = sms_http.GET(fetch_url);
+                    success = sms_gateway_response.ToUpper().Contains("3001");
+                    if (!success)
+                        success = sms_gateway_response.ToUpper().Contains("SENT");
+
+                }
+                catch (System.Exception ex)
+                {
+                    logger.log("error", ex);
+                }
+                if (!success)
+                {
+                    this.logger.log("fatal", sms_gateway_response);
+                    throw new System.Exception("Failed to send sms");
+                }
             }
             return fetch_url;
         }
